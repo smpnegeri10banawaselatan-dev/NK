@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data AS & SHIO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <div class="flex flex-col md:flex-row h-screen">
+    <!-- Sidebar -->
+    <div class="bg-gray-800 text-white w-full md:w-60 p-4">
+      <h2 class="text-xl font-bold mb-4">Pilih Menu</h2>
+      <select id="menuSelect" class="w-full p-2 rounded bg-gray-700 text-white mb-4">
+        <option value="AS">AS BBFS</option>
+        <option value="SHIO">2D SHIO</option>
+      </select>
+
+      <div id="asSection">
+        <label class="block mb-2">Pilih AS</label>
+        <select id="asSelect" class="w-full p-2 rounded bg-gray-700 text-white">
+          <!-- Opsi AS akan diisi via JS -->
+        </select>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-1 p-4 flex flex-col">
+      <div id="asInputSection">
+        <h3 class="text-lg font-semibold mb-2">Masukkan Angka Main:</h3>
+        <textarea id="angkaMain" placeholder="Contoh: 12 34 56 atau 12,34,56 atau satu per baris"
+          class="w-full max-w-xl p-3 border rounded mb-4 resize-none text-gray-800"></textarea>
+      </div>
+
+      <div id="content" class="flex-1">
+        <!-- iframe dinamis akan muncul di sini -->
+      </div>
+    </div>
+  </div>
+
+  <style>
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+      display: none;
+      background: white;
+    }
+    iframe.active {
+      display: block;
+    }
+    .highlight {
+      color: red !important;
+      font-weight: bold;
+    }
+  </style>
+
+  <script>
+    const spreadsheetID = "1b4S-Co_BYVsQ16Yc3QsYA7hZE3K1-9cC27LN3EDML5A";
+    const asSheetNames = ["AS 0", "AS 1", "AS 2", "AS 3", "AS 4", "AS 5", "AS 6", "AS 7", "AS 8", "AS 9"];
+    const shioSheetName = "SHIO MAIN";
+
+    const menuSelect = document.getElementById("menuSelect");
+    const asSelect = document.getElementById("asSelect");
+    const asSection = document.getElementById("asSection");
+    const asInputSection = document.getElementById("asInputSection");
+    const content = document.getElementById("content");
+    const angkaMainTextarea = document.getElementById("angkaMain");
+
+    let currentIframeIndex = 0;
+    let mode = "AS"; // AS atau SHIO
+
+    // Populate AS Options and Iframes
+    asSheetNames.forEach((name, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.textContent = name;
+      asSelect.appendChild(option);
+
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://docs.google.com/spreadsheets/d/${spreadsheetID}/gviz/tq?tqx=out:html&sheet=${encodeURIComponent(name)}`;
+      iframe.id = `iframe-as-${index}`;
+      content.appendChild(iframe);
+
+      iframe.onload = () => {
+        if (mode === "AS") highlightNumbersInIframe(iframe);
+      };
+    });
+
+    // SHIO iframe
+    const shioIframe = document.createElement("iframe");
+    shioIframe.src = `https://docs.google.com/spreadsheets/d/${spreadsheetID}/gviz/tq?tqx=out:html&sheet=${encodeURIComponent(shioSheetName)}`;
+    shioIframe.id = `iframe-shio`;
+    content.appendChild(shioIframe);
+
+    // Event Listeners
+    menuSelect.addEventListener("change", (e) => {
+      mode = e.target.value;
+      updateView();
+    });
+
+    asSelect.addEventListener("change", (e) => {
+      showASSheet(parseInt(e.target.value));
+    });
+
+    angkaMainTextarea.addEventListener("input", () => {
+      if (mode === "AS") {
+        const iframe = document.getElementById(`iframe-as-${currentIframeIndex}`);
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const tds = iframeDoc.querySelectorAll("td");
+        tds.forEach(td => td.classList.remove("highlight"));
+        highlightNumbersInIframe(iframe);
+      }
+    });
+
+    function updateView() {
+      document.querySelectorAll("iframe").forEach(iframe => iframe.classList.remove("active"));
+
+      if (mode === "AS") {
+        asSection.style.display = "block";
+        asInputSection.style.display = "block";
+        showASSheet(currentIframeIndex);
+      } else if (mode === "SHIO") {
+        asSection.style.display = "none";
+        asInputSection.style.display = "none";
+        document.getElementById("iframe-shio").classList.add("active");
+      }
+    }
+
+    function showASSheet(index) {
+      document.querySelectorAll("iframe").forEach(iframe => iframe.classList.remove("active"));
+      document.getElementById(`iframe-as-${index}`).classList.add("active");
+      currentIframeIndex = index;
+
+      setTimeout(() => {
+        const iframe = document.getElementById(`iframe-as-${currentIframeIndex}`);
+        highlightNumbersInIframe(iframe);
+      }, 500);
+    }
+
+    function getAngkaMain() {
+      return angkaMainTextarea.value
+        .split(/[\s,]+/)
+        .map(x => x.trim())
+        .filter(x => x.length > 0);
+    }
+
+    function highlightNumbersInIframe(iframe) {
+      const angkaMain = getAngkaMain();
+      if (angkaMain.length === 0) return;
+
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      const tds = iframeDoc.querySelectorAll("td");
+
+      tds.forEach(td => {
+        const val = td.textContent.trim();
+        if (angkaMain.includes(val)) {
+          td.classList.add("highlight");
+        }
+      });
+    }
+
+    window.onload = () => updateView();
+  </script>
+
+</body>
+</html>
