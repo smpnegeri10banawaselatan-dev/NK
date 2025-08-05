@@ -15,7 +15,7 @@
       <select id="menuSelect" class="w-full p-2 rounded bg-gray-700 text-white mb-4">
         <option value="AS">AS BBFS</option>
         <option value="SHIO">SHIO</option>
-        <option value="2D">2D </option>
+        <option value="TWO_D">2D</option>
       </select>
 
       <div id="asSection">
@@ -61,7 +61,7 @@
     const spreadsheetID = "1b4S-Co_BYVsQ16Yc3QsYA7hZE3K1-9cC27LN3EDML5A";
     const asSheetNames = ["AS 0", "AS 1", "AS 2", "AS 3", "AS 4", "AS 5", "AS 6", "AS 7", "AS 8", "AS 9"];
     const shioSheetName = "SHIO MAIN";
-    const 2dSheetName = "2D";
+    const twoDSheetName = "2D";
 
     const menuSelect = document.getElementById("menuSelect");
     const asSelect = document.getElementById("asSelect");
@@ -71,9 +71,9 @@
     const angkaMainTextarea = document.getElementById("angkaMain");
 
     let currentIframeIndex = 0;
-    let mode = "AS"; // AS atau SHIO
+    let mode = "AS"; // AS | SHIO | TWO_D
 
-    // Populate AS Options and Iframes
+    // Populate AS Dropdown & Iframes
     asSheetNames.forEach((name, index) => {
       const option = document.createElement("option");
       option.value = index;
@@ -95,6 +95,12 @@
     shioIframe.src = `https://docs.google.com/spreadsheets/d/${spreadsheetID}/gviz/tq?tqx=out:html&sheet=${encodeURIComponent(shioSheetName)}`;
     shioIframe.id = `iframe-shio`;
     content.appendChild(shioIframe);
+
+    // 2D iframe
+    const twoDIframe = document.createElement("iframe");
+    twoDIframe.src = `https://docs.google.com/spreadsheets/d/${spreadsheetID}/gviz/tq?tqx=out:html&sheet=${encodeURIComponent(twoDSheetName)}`;
+    twoDIframe.id = `iframe-2d`;
+    content.appendChild(twoDIframe);
 
     // Event Listeners
     menuSelect.addEventListener("change", (e) => {
@@ -127,6 +133,10 @@
         asSection.style.display = "none";
         asInputSection.style.display = "none";
         document.getElementById("iframe-shio").classList.add("active");
+      } else if (mode === "TWO_D") {
+        asSection.style.display = "none";
+        asInputSection.style.display = "none";
+        document.getElementById("iframe-2d").classList.add("active");
       }
     }
 
