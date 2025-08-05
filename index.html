@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data AS BBFS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <div class="flex flex-col md:flex-row h-screen">
+    <!-- Sidebar -->
+    <div class="bg-gray-800 text-white w-full md:w-60 p-4">
+      <h2 class="text-xl font-bold mb-4">Pilih AS</h2>
+      <select id="asSelect" class="w-full p-2 rounded bg-gray-700 text-white">
+        <!-- Opsi AS akan diisi via JS -->
+      </select>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-1 p-4 flex flex-col">
+      <h3 class="text-lg font-semibold mb-2">Masukkan Angka Main:</h3>
+      <textarea id="angkaMain" placeholder="Contoh: 12 34 56 atau 12,34,56 atau satu per baris"
+        class="w-full max-w-xl p-3 border rounded mb-4 resize-none text-gray-800"></textarea>
+
+      <div id="content" class="flex-1">
+        <!-- iframe dinamis akan muncul di sini -->
+      </div>
+    </div>
+  </div>
+
+  <style>
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+      display: none;
+      background: white;
+    }
+    iframe.active {
+      display: block;
+    }
+    .highlight {
+      color: red !important;
+      font-weight: bold;
+    }
+  </style>
+
+  <script>
+    const sheetNames = ["AS 0", "AS 1", "AS 2", "AS 3", "AS 4", "AS 5", "AS 6", "AS 7", "AS 8", "AS 9"];
+    const spreadsheetID = "1b4S-Co_BYVsQ16Yc3QsYA7hZE3K1-9cC27LN3EDML5A";
+    const select = document.getElementById("asSelect");
+    const content = document.getElementById("content");
+    const angkaMainTextarea = document.getElementById("angkaMain");
+
+    let currentIframeIndex = 0;
+
+    // Buat opsi dropdown dan iframe
+    sheetNames.forEach((name, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.textContent = name;
+      select.appendChild(option);
+
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://docs.google.com/spreadsheets/d/${spreadsheetID}/gviz/tq?tqx=out:html&sheet=${encodeURIComponent(name)}`;
+      iframe.id = `iframe-${index}`;
+      content.appendChild(iframe);
+
+      iframe.onload = () => {
+        highlightNumbersInIframe(iframe);
+      };
+    });
+
+    select.addEventListener("change", (e) => {
+      showSheet(parseInt(e.target.value));
+    });
+
+    function showSheet(index) {
+      document.querySelectorAll("iframe").forEach(iframe => iframe.classList.remove("active"));
+      document.getElementById(`iframe-${index}`).classList.add("active");
+
+      currentIframeIndex = index;
+
+      setTimeout(() => {
+        const iframe = document.getElementById(`iframe-${currentIframeIndex}`);
+        highlightNumbersInIframe(iframe);
+      }, 500);
+    }
+
+    function getAngkaMain() {
+      return angkaMainTextarea.value
+        .split(/[\s,]+/)
+        .map(x => x.trim())
+        .filter(x => x.length > 0);
+    }
+
+    function highlightNumbersInIframe(iframe) {
+      const angkaMain = getAngkaMain();
+      if (angkaMain.length === 0) return;
+
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      const tds = iframeDoc.querySelectorAll("td");
+
+      tds.forEach(td => {
+        const val = td.textContent.trim();
+        if (angkaMain.includes(val)) {
+          td.classList.add("highlight");
+        }
+      });
+    }
+
+    angkaMainTextarea.addEventListener("input", () => {
+      const iframe = document.getElementById(`iframe-${currentIframeIndex}`);
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      const tds = iframeDoc.querySelectorAll("td");
+      tds.forEach(td => td.classList.remove("highlight"));
+      highlightNumbersInIframe(iframe);
+    });
+
+    window.onload = () => showSheet(0);
+  </script>
+
+</body>
+</html>
