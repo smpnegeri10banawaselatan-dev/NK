@@ -9,12 +9,20 @@
 <body class="bg-gray-100 min-h-screen">
 
   <div class="flex flex-col md:flex-row h-screen">
-    <!-- Sidebar -->
+       <!-- Sidebar -->
     <div class="bg-gray-800 text-white w-full md:w-60 p-4">
-      <h2 class="text-xl font-bold mb-4">Pilih AS</h2>
-      <select id="asSelect" class="w-full p-2 rounded bg-gray-700 text-white">
-        <!-- Opsi AS akan diisi via JS -->
+      <h2 class="text-xl font-bold mb-4">Pilih Menu</h2>
+      <select id="menuSelect" class="w-full p-2 rounded bg-gray-700 text-white mb-4">
+        <option value="AS">AS BBFS</option>
+        <option value="SHIO">2D SHIO</option>
       </select>
+
+      <div id="asSection">
+        <label class="block mb-2">Pilih AS</label>
+        <select id="asSelect" class="w-full p-2 rounded bg-gray-700 text-white">
+          <!-- Opsi AS akan diisi via JS -->
+        </select>
+      </div>
     </div>
 
     <!-- Main content -->
