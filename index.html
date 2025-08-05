@@ -9,7 +9,7 @@
 <body class="bg-gray-100 min-h-screen">
 
   <div class="flex flex-col md:flex-row h-screen">
-       <!-- Sidebar -->
+    <!-- Sidebar -->
     <div class="bg-gray-800 text-white w-full md:w-60 p-4">
       <h2 class="text-xl font-bold mb-4">Pilih Menu</h2>
       <select id="menuSelect" class="w-full p-2 rounded bg-gray-700 text-white mb-4">
@@ -57,13 +57,21 @@
   <script>
     const sheetNames = ["AS 0", "AS 1", "AS 2", "AS 3", "AS 4", "AS 5", "AS 6", "AS 7", "AS 8", "AS 9"];
     const spreadsheetID = "1b4S-Co_BYVsQ16Yc3QsYA7hZE3K1-9cC27LN3EDML5A";
+    const menuSelect = document.getElementById("menuSelect");
     const select = document.getElementById("asSelect");
     const content = document.getElementById("content");
     const angkaMainTextarea = document.getElementById("angkaMain");
 
     let currentIframeIndex = 0;
 
-    // Buat opsi dropdown dan iframe
+    // Menu Redirect Handling
+    menuSelect.addEventListener("change", (e) => {
+      if (e.target.value === "SHIO") {
+        window.location.href = "shio.html";
+      }
+    });
+
+    // Populate AS Options and Iframes
     sheetNames.forEach((name, index) => {
       const option = document.createElement("option");
       option.value = index;
