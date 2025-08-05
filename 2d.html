@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>2D SHIO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <div class="flex flex-col md:flex-row h-screen">
+    <!-- Sidebar -->
+    <div class="bg-gray-800 text-white w-full md:w-60 p-4">
+      <h2 class="text-xl font-bold mb-4">Menu</h2>
+      <a href="index.html" class="block mb-2 p-2 bg-gray-700 rounded text-center hover:bg-gray-600">AS BBFS</a>
+      <a href="shio.html" class="block mb-2 p-2 bg-gray-900 rounded text-center">2D</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-1 p-4 flex flex-col">
+      <h3 class="text-lg font-semibold mb-4">Data 2D </h3>
+
+      <div id="content" class="flex-1">
+        <iframe id="shioIframe" src="" class="w-full h-full border rounded bg-white"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const spreadsheetID = "1b4S-Co_BYVsQ16Yc3QsYA7hZE3K1-9cC27LN3EDML5A";
+    const sheetName = "2D";
+    const iframe = document.getElementById("shioIframe");
+
+    iframe.src = `https://docs.google.com/spreadsheets/d/${spreadsheetID}/gviz/tq?tqx=out:html&sheet=${encodeURIComponent(sheetName)}`;
+  </script>
+
+</body>
+</html>
